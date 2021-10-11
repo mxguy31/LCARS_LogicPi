@@ -69,15 +69,15 @@ User functions not required by the main engine should start with an underscore (
 The GUI is based on Star Trek LCARS. GUI design elements are in the "GUI" folder, there are a series of custom LCARS widgets that can be utilized to develop custom displays, see the Kivy Framework for information on use.
 
 Main Display
-![main display](https://github.com/mxguy31/LogicPi2/blob/main/screenshot/MainDisplay.png)
+![main display](https://github.com/mxguy31/LCARS_LogicPi/blob/main/screenshot/MainDisplay.png)
 
 Program Screen
-![Program Screen](https://github.com/mxguy31/LogicPi2/blob/main/screenshot/ProgramScreen.png)
+![Program Screen](https://github.com/mxguy31/LCARS_LogicPi/blob/main/screenshot/ProgramScreen.png)
 
 System Trends
-![System Trends](https://github.com/mxguy31/LogicPi2/blob/main/screenshot/SystemTrends.png)
+![System Trends](https://github.com/mxguy31/LCARS_LogicPi/blob/main/screenshot/SystemTrends.png)
 
 Alarm Screen
-![Alarm Screen](https://github.com/mxguy31/LogicPi2/blob/main/screenshot/AlarmScreen.png)
+![Alarm Screen](https://github.com/mxguy31/LCARS_LogicPi/blob/main/screenshot/AlarmScreen.png)
 
 
