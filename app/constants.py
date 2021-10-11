@@ -42,6 +42,7 @@ class CONST:
     # How many seconds to allow processes to start running
     PROCESS_CHECK_DELAY = 5
 
+    # Datalog table is limited to 14 days of data
     DB_CREATE_STRS = (
         """CREATE TABLE IF NOT EXISTS Data (
             id INTEGER PRIMARY KEY,
