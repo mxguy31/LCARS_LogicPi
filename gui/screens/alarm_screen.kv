@@ -1,0 +1,76 @@
+#:kivy 2.0.0
+#:import utils kivy.utils
+
+#:import GUI_CONST gui.constants.GUI_CONST
+#:import LCARSBar gui.widgets.lcars_images
+#:import LCARSButtonRound gui.widgets.lcars_button
+#:import LCARSAlarmViewer gui.widgets.lcars_alarm_viewer
+#:import LCARSAlarmHeader gui.widgets.lcars_alarm_viewer
+
+<AlarmScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: [25, 5]
+            Label:
+                text: 'ACTIVE'
+                size_hint: (None, None)
+                width: self.texture_size[0] + sp(10)
+                height: sp(40)
+                font_size: sp(34)
+                font_name: 'LCARS_Bold'
+                color: GUI_CONST.COLORS['violet']
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: 150
+            padding: [25, 5]
+            LCARSAlarmHeader:
+            LCARSAlarmViewer:
+                data: root.alarm_data
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: self.minimum_height
+            spacing: 10
+            padding: [25, 5]
+            Widget:
+                size_hint_x: .9
+            LCARSButtonRound:
+                text: 'SILENCE'
+                on_release: root.silence()
+                background_color: GUI_CONST.COLORS['orange']
+            LCARSButtonRound:
+                text: 'ACKNOWLEDGE'
+                on_release: root.accept()
+                background_color: GUI_CONST.COLORS['light_blue']
+            LCARSButtonRound:
+                text: 'RESET'
+                on_release: root.reset()
+                background_color: GUI_CONST.COLORS['red']
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: [25, 5]
+            Label:
+                text: 'HISTORY'
+                size_hint: (None, None)
+                width: self.texture_size[0] + sp(10)
+                height: sp(40)
+                font_size: sp(34)
+                font_name: 'LCARS_Bold'
+                color: GUI_CONST.COLORS['violet']
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.48
+            padding: [25, 5]
+            LCARSAlarmHeader:
+            LCARSAlarmViewer:
+                data: root.history_data

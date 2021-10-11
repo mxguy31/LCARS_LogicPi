@@ -1,0 +1,318 @@
+#:kivy 2.0.0
+#:import GUI_CONST gui.constants.GUI_CONST
+#:import LCARSBar gui.widgets.lcars_images
+#:import LCARSCap gui.widgets.lcars_images
+#:import LCARSButtonRoundRight gui.widgets.lcars_button
+#:import LCARSEquipmentButton gui.widgets.lcars_button
+
+#            canvas.after:
+#                Line:
+#                    rectangle: self.x+1,self.y+1,self.width-1,self.height-1
+#                    dash_offset: 5
+#                    dash_length: 3
+
+<SideBtn@BoxLayout>:
+    side_text: '49'
+    btn_text: '00-01435'
+    color: GUI_CONST.COLORS['orange']
+    hide_left: False
+    hide_right: False
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: self.minimum_height
+    spacing: 5
+    LCARSBar:
+        width: dp(25)
+        height: dp(51)
+        color: root.color
+        opacity: 0 if root.hide_left else 1
+    Label:
+        font_name: 'LCARS_Semi_Bold'
+        font_size: sp(45)
+        size_hint: None, None
+        size: dp(50), dp(50)
+        text_size: self.size
+        halign: 'center'
+        color: GUI_CONST.COLORS['orange']
+        text: root.side_text
+    LCARSButtonRoundRight:
+        id: btn
+        text: root.btn_text
+        background_color: root.color
+        on_release: root.btn_press()
+        disabled: root.hide_right
+        halign: 'left'
+
+<SystemScreen>:
+    BoxLayout:
+        orientation: 'horizontal'
+        RelativeLayout:
+            size_hint: (None, None)
+            size: (800, 550)
+
+            Image:
+                source: './gui/assets/textures/equipment/backdrop.png'
+
+            LCARSButtonBoolEquipment:
+                id: filter_plugged
+                io_point: 'Custom_DI00'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                size: (90, 100)
+                pos: (165, 40)
+                background_normal: './gui/assets/textures/equipment/filters.png'
+                background_down: './gui/assets/textures/equipment/filters_down.png'
+                color_none: [0, 0, 0, 0]
+                color_true: GUI_CONST.COLORS['mars']
+                disabled: True
+                blink_on: True
+
+            LCARSButtonBoolEquipment:
+                id: filter_overflow
+                io_point: 'Custom_DI01'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                size: (150, 140)
+                pos: (110, 20)
+                blink_on: True
+                disabled: True
+                background_normal: './gui/assets/textures/equipment/filter_alarm.png'
+                color_none: [0, 0, 0, 1]
+                color_true: GUI_CONST.COLORS['mars']
+                color_false: [0, 0, 0, 1]
+            
+            LCARSButtonBoolEquipment:
+                id: return_stack_high
+                io_point: 'Custom_DI02'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                size: (40, 125)
+                pos: (110, 270)
+                blink_on: True
+                disabled: True
+                background_normal: './gui/assets/textures/equipment/overflow_alarm.png'
+                color_none: [0, 0, 0, 1]
+                color_true: GUI_CONST.COLORS['mars']
+                color_false: [0, 0, 0, 1]
+
+            LCARSButtonBoolEquipment:
+                id: sump_vhigh
+                io_point: 'Custom_DI03'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                size: (165, 90)
+                pos: (525, 20)
+                blink_on: True
+                disabled: True
+                color_none: [0, 0, 0, 0]
+                color_true: GUI_CONST.COLORS['mars']
+                color_false: [0, 0, 0, 0]
+
+            LCARSButtonBoolEquipment:
+                id: sump_vlow
+                io_point: 'Custom_DI06'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                size: (165, 20)
+                pos: (525, 20)
+                blink_on: True
+                disabled: True
+                color_none: [0, 0, 0, 0]
+                color_true: GUI_CONST.COLORS['mars']
+                color_false: [0, 0, 0, 0]
+
+            LCARSButtonBoolEquipment:
+                id: main_pump
+                human_text: 'MAIN PUMP'
+                on_press: root.equipment_select(disp_text=self.human_text, d_point=self.io_point)
+                io_point: 'Custom_DO04'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                override: True if self.io_point in root.locks else False
+                size: (90, 60)
+                pos: (595, 25)
+                background_normal: './gui/assets/textures/equipment/pump.png'
+                background_down: './gui/assets/textures/equipment/pump_down.png'
+
+            LCARSButtonBoolEquipment:
+                id: heater
+                human_text: 'MAIN HEATER'
+                on_press: root.equipment_select(disp_text=self.human_text, d_point='SSR_01')
+                io_point: 'HEAT_ENGAGED'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                override: True if 'SSR_01' in root.locks else False
+                size: (30, 80)
+                pos: (530, 25)
+                background_normal: './gui/assets/textures/equipment/heater.png'
+                background_down: './gui/assets/textures/equipment/heater_down.png'
+
+            LCARSButtonBoolEquipment:
+                id: sterilizer
+                human_text: 'UV STERILIZER'
+                on_press: root.equipment_select(disp_text=self.human_text, d_point=self.io_point)
+                io_point: 'Custom_DO05'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                override: True if self.io_point in root.locks else False
+                size: (145, 55)
+                pos: (585, 190)
+                background_normal: './gui/assets/textures/equipment/sterilizer.png'
+                background_down: './gui/assets/textures/equipment/sterilizer_down.png'
+                color_true: GUI_CONST.COLORS['sunflower']
+
+            LCARSButtonBoolEquipment:
+                id: column_a
+                io_point: 'None'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                size: (40, 100)
+                pos: (395, 95)
+                background_normal: './gui/assets/textures/equipment/column.png'
+                background_down: './gui/assets/textures/equipment/column_down.png'
+                color_none: GUI_CONST.COLORS['sky']
+                disabled: True
+
+            LCARSButtonBoolEquipment:
+                id: column_b
+                io_point: 'None'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                size: (40, 100)
+                pos: (455, 95)
+                background_normal: './gui/assets/textures/equipment/column.png'
+                background_down: './gui/assets/textures/equipment/column_down.png'
+                color_none: GUI_CONST.COLORS['sky']
+                disabled: True
+
+            LCARSButtonBoolEquipment:
+                id: skimmer
+                human_text: 'PROTIEN SKIMMER'
+                on_press: root.equipment_select(disp_text=self.human_text, d_point=self.io_point)
+                io_point: 'Custom_DO06'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                override: True if self.io_point in root.locks else False
+                size: (80, 200)
+                pos: (290, 25)
+                background_normal: './gui/assets/textures/equipment/skimmer.png'
+                background_down: './gui/assets/textures/equipment/skimmer_down.png'
+        
+            LCARSButtonBoolEquipment:
+                id: left_light
+                human_text: 'LEFT LIGHT'
+                on_press: root.equipment_select(disp_text=self.human_text, d_point=self.io_point)
+                io_point: 'Custom_DO07'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                override: True if self.io_point in root.locks else False
+                size: (60, 60)
+                pos: (275, 475)
+                background_normal: './gui/assets/textures/equipment/light.png'
+                background_down: './gui/assets/textures/equipment/light_down.png'
+                color_true: GUI_CONST.COLORS['sunflower']
+            
+            LCARSButtonBoolEquipment:
+                id: right_light
+                human_text: 'RIGHT LIGHT'
+                on_press: root.equipment_select(disp_text=self.human_text, d_point=self.io_point)
+                io_point: 'Custom_DO08'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                override: True if self.io_point in root.locks else False
+                size: (60, 60)
+                pos: (500, 475)
+                background_normal: './gui/assets/textures/equipment/light.png'
+                background_down: './gui/assets/textures/equipment/light_down.png'
+                color_true: GUI_CONST.COLORS['sunflower']
+
+            LCARSButtonBoolEquipment:
+                id: cooling_fan_a
+                human_text: 'LEFT FAN'
+                on_press: root.equipment_select(disp_text=self.human_text, d_point=self.io_point)
+                io_point: 'Custom_DO01'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                override: True if self.io_point in root.locks else False
+                size: (50, 50)
+                pos: (200, 475)
+                background_normal: './gui/assets/textures/equipment/fan.png'
+                background_down: './gui/assets/textures/equipment/fan_down.png'
+            
+            LCARSButtonBoolEquipment:
+                id: cooling_fan_b
+                human_text: 'RIGHT FAN'
+                on_press: root.equipment_select(disp_text=self.human_text, d_point=self.io_point)
+                io_point: 'Custom_DO02'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                override: True if self.io_point in root.locks else False
+                size: (50, 50)
+                pos: (575, 475)
+                background_normal: './gui/assets/textures/equipment/fan.png'
+                background_down: './gui/assets/textures/equipment/fan_down.png'
+        
+            LCARSButtonBoolEquipment:
+                id: left_powerhead
+                human_text: 'LEFT POWERHEAD'
+                on_press: root.equipment_select(disp_text=self.human_text, d_point=self.io_point)
+                io_point: 'Custom_DO09'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                override: True if self.io_point in root.locks else False
+                size: (50, 50)
+                pos: (175, 325)
+                background_normal: './gui/assets/textures/equipment/powerhead.png'
+                background_down: './gui/assets/textures/equipment/powerhead_down.png'
+            
+            LCARSButtonBoolEquipment:
+                id: right_powerhead
+                human_text: 'RIGHT POWERHEAD'
+                on_press: root.equipment_select(disp_text=self.human_text, d_point=self.io_point)
+                io_point: 'Custom_DO10'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                override: True if self.io_point in root.locks else False
+                size: (50, 50)
+                pos: (620, 325)
+                background_normal: './gui/assets/textures/equipment/powerhead.png'
+                background_down: './gui/assets/textures/equipment/powerhead_down.png'
+        
+        Widget:
+
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 5
+            size_hint_x: None
+            width: 250
+            Widget:
+            SideBtn:
+                side_text: '11'
+                btn_text: 'WATER CHANGE'
+                btn_press: root.start_water_change
+                color: GUI_CONST.COLORS['african_violet']
+                hide_right: not root.wc_start
+            SideBtn:
+                side_text: '17'
+                btn_text: 'WC-CANCEL'
+                btn_press: root.cancel_water_change
+                color: GUI_CONST.COLORS['tomato']
+                hide_right: not root.wc_cancel
+            SideBtn:
+                side_text: '83'
+                btn_text: '03-34926'
+                btn_press: root.not_imp
+                color: GUI_CONST.COLORS['yellow']
+            SideBtn:
+                side_text: '05'
+                btn_text: 'WC-CONFIRM'
+                btn_press: root.confirm_water_change
+                color: GUI_CONST.COLORS['peach']
+                hide_right: not root.wc_confirm
+            SideBtn:
+                side_text: '08'
+                btn_text: '05-53484'
+                btn_press: root.not_imp
+                color: GUI_CONST.COLORS['tomato']
+                hide_left: True
+            SideBtn:
+                side_text: '84'
+                btn_text: '06-01767'
+                btn_press: root.not_imp
+                color: GUI_CONST.COLORS['african_violet']
+            SideBtn:
+                side_text: '10'
+                btn_text: 'TC-DETAIL'
+                btn_press: root.not_imp
+                color: GUI_CONST.COLORS['yellow']
+            SideBtn:
+                side_text: '14'
+                btn_text: '08-83060'
+                btn_press: root.not_imp
+                color: GUI_CONST.COLORS['lilac']
+                hide_left: True
+            Widget:
+

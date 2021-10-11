@@ -1,0 +1,86 @@
+#:kivy 2.0.0
+#:import utils kivy.utils
+
+#:import LCARSRangeSlider gui.widgets.lcars_range_slider
+#:import LCARSDataSelector gui.widgets.lcars_data_selector
+
+#<Widget>:
+#    canvas.after:
+#        Line:
+#            rectangle: self.x+1,self.y+1,self.width-1,self.height-1
+#            dash_offset: 5
+#            dash_length: 3
+
+<DataPoint@Label>:
+    font_size: sp(18)
+    text_size: self.size
+    font_name: 'LCARS_Bold'
+
+<TrendScreen>:
+    viewgrid: viewgrid
+    data_selection: dataselector.current_selection
+    x_v1: hslide.value1
+    x_v2: hslide.value2
+    y_v1: vslide.value1
+    y_v2: vslide.value2
+    GridLayout:
+        viewgrid: viewgrid
+        padding: 10
+        spacing: 5
+        cols: 3
+        Widget:
+            size_hint: (0.05, None)
+            height: 45
+        GridLayout:
+            cols: 3
+            size_hint: (0.7, None)
+            height: 45
+            DataPoint:
+                text: root.label0[0]
+                color: root.label0[1]
+            DataPoint:
+                text: root.label1[0]
+                color: root.label1[1]
+            DataPoint:
+                text: root.label2[0]
+                color: root.label2[1]
+            DataPoint:
+                text: root.label3[0]
+                color: root.label3[1]
+            DataPoint:
+                text: root.label4[0]
+                color: root.label4[1]
+            DataPoint:
+                text: root.label5[0]
+                color: root.label5[1]
+        Widget:
+            size_hint: (0.05, None)
+            height: 45
+        LCARSRangeSlider:
+            id: vslide
+            min: root.min_y
+            max: root.max_y
+            step: 1
+            orientation: 'vertical'
+            size_hint: (.05, .8)
+        BoxLayout:
+            id: viewgrid
+            orientation: 'horizontal'
+            padding: 15
+        LCARSDataSelector:
+            id: dataselector
+            size_hint: (0.25, 0.8)
+            disp_data: root.data_list
+        Widget:
+            size_hint: (.05, .1)
+        LCARSRangeSlider:
+            id: hslide
+            min: root.min_x
+            max: root.max_x
+            min_diff: 2
+            step: 1
+            orientation: 'horizontal'
+            size_hint: (0.7, 0.1)
+        Widget:
+            size_hint: (0.25, 0.1)
+        

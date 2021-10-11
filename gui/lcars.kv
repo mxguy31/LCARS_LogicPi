@@ -1,0 +1,250 @@
+#:kivy 2.0.0
+#:import utils kivy.utils
+
+#:import GUI_CONST gui.constants.GUI_CONST
+
+#:import LCARSBar gui.widgets.lcars_images
+#:import LCARSCap gui.widgets.lcars_images
+#:import LCARSElbow gui.widgets.lcars_images
+#:import LCARSButton gui.widgets.lcars_button
+#:import LCARSInfoGrid gui.widgets.lcars_info_grid
+#:import LCARSButtonRound gui.widgets.lcars_button
+#:import LCARSButtonSideBarMed gui.widgets.lcars_button
+#:import LCARSButtonSideBarTall gui.widgets.lcars_button
+#:import LCARSButtonSideBarShort gui.widgets.lcars_button
+
+#:import LogScreen gui.screens.log_screen
+#:import ProgramScreen gui.screens.program_screen
+#:import SystemScreen gui.screens.system_screen
+#:import AlarmScreen gui.screens.alarm_screen
+#:import SettingScreen gui.screens.setting_screen
+#:import TrendScreen gui.screens.trend_screen
+#:import LCARSTransition gui.screens.lcars_transition.LCARSTransition
+
+#:set top_bar_hint 0.4
+#:set bot_bar_hint 0.1666
+
+#<Widget>:
+#    canvas.after:
+#        Line:
+#            rectangle: self.x+1,self.y+1,self.width-1,self.height-1
+#            dash_offset: 5
+#            dash_length: 3
+
+<MainDisplay>:
+    RelativeLayout:
+        id: top_layout
+        pos: (0, 0)
+        size: root.width, root.height
+
+        #############################################################
+        # Top decorative area
+        LCARSButtonSideBarShort:
+            id: exit_button
+            text: '01-47813' if self.state != 'down' else 'Exit GUI'
+            pos: (5, top_layout.height - self.height - 5)
+            background_color: GUI_CONST.COLORS['african_violet'] if not root.alarming else GUI_CONST.COLORS['mars']
+            long_press_time: 5
+            on_long_press: root.close_gui()
+            #on_release: root.close_gui()
+            height: 60
+
+        LCARSElbowTall:
+            id: top_elbow
+            orientation: 'bottom_left'
+            color: GUI_CONST.COLORS['light_blue'] if not root.alarming else GUI_CONST.COLORS['mars']
+            pos: (5, exit_button.y - self.height - 5)
+            id_number: '02-75149'
+
+        LCARSElbowTall:
+            id: bot_elbow
+            orientation: 'top_left'
+            color: GUI_CONST.COLORS['tomato'] if not root.alarming else GUI_CONST.COLORS['mars']
+            pos: (5, top_elbow.y - self.height - 5)
+            id_number: '03-34924'
+
+        LCARSBar:
+            id: top_elbow_ext
+            color: top_elbow.color
+            width: 400
+            pos: (top_elbow.x + top_elbow.width, top_elbow.y)
+
+        LCARSBar:
+            id: bot_elbow_ext
+            color: bot_elbow.color
+            width: top_elbow_ext.width
+            pos: (bot_elbow.x + bot_elbow.width, bot_elbow.y + bot_elbow.height - self.height)
+
+        LCARSBar:
+            id: top_bar_L
+            color: GUI_CONST.COLORS['sunflower'] if not root.alarming else GUI_CONST.COLORS['mars']
+            width: 40
+            pos: (bot_elbow_ext.x + bot_elbow_ext.width + 5, top_elbow.y)
+
+        LCARSBar:
+            id: bot_bar_L
+            color: top_bar_L.color
+            width: top_bar_L.width
+            pos: (top_bar_L.x, bot_elbow_ext.y)
+        
+        LCARSBar:
+            id: top_bar_M
+            color: GUI_CONST.COLORS['african_violet'] if not root.alarming else GUI_CONST.COLORS['mars']
+            width: 200
+            pos: (top_bar_L.x + top_bar_L.width + 5, top_elbow.y)
+
+        LCARSBar:
+            id: bot_bar_M
+            color: GUI_CONST.COLORS['peach'] if not root.alarming else GUI_CONST.COLORS['mars']
+            size: (top_bar_M.width, 10)
+            pos: (top_bar_M.x, bot_elbow_ext.y + 10)
+
+        LCARSBar:
+            id: top_bar_R
+            color: GUI_CONST.COLORS['african_violet'] if not root.alarming else GUI_CONST.COLORS['mars']
+            width: top_cap.x - self.x - 5
+            pos: (top_bar_M.x + top_bar_M.width + 5, top_elbow.y)
+
+        LCARSBar:
+            id: bot_bar_R
+            color: top_bar_R.color
+            width: top_bar_R.width
+            pos: (top_bar_R.x, bot_elbow_ext.y)
+
+        LCARSBar:
+            id: top_cap
+            color: GUI_CONST.COLORS['tomato'] if not root.alarming else GUI_CONST.COLORS['mars']
+            width: 40
+            pos: (root.width - (self.width + 5), top_elbow.y)
+
+        LCARSBar:
+            id: bot_cap
+            color: GUI_CONST.COLORS['peach'] if not root.alarming else GUI_CONST.COLORS['mars']
+            width: top_cap.width
+            pos: (top_cap.x, bot_elbow_ext.y)
+
+        LCARSInfoGrid:
+            id: infogrid
+            size_hint: (None, None)
+            pos: (top_elbow.x + 120, top_elbow.y + 35)
+            size: (650, 120)
+            rows: 6
+            cols: 10
+            text_dict: root.info_grid_text
+            cascade_pattern: 'random'
+            cascade_length: .6
+
+        #############################################################
+        # Top action buttons
+        GridLayout:
+            pos: (root.width - (self.width + 10), infogrid.y)
+            padding: 5
+            spacing: 10
+            cols: 2
+            size_hint: (None, None)
+            size: (self.minimum_width, infogrid.height)
+            LCARSButtonRound:
+                id: print_btn
+                text: 'PRINT'
+                background_color: GUI_CONST.COLORS['light_blue']
+                on_release: root.take_screenshot()
+            LCARSButtonRound:
+                id: log_btn
+                text: 'LOGS'
+                background_color: GUI_CONST.COLORS['peach']
+                on_release: _screen_manager.current = 'SYSTEM LOGS'
+            LCARSButtonRound:
+                id: alarm_silence
+                text: 'SILENCE'
+                background_color: GUI_CONST.COLORS['orange']
+                on_release: root.alarm_silence()
+            LCARSButtonRound:
+                id: alarm_disp
+                text: 'ALARMS'
+                background_color: GUI_CONST.COLORS['red']
+                on_release: _screen_manager.current = 'ALARMS'
+
+        #############################################################
+        # Side Panel Buttons
+        ScrollView:
+            do_scroll_y: True
+            do_scroll_x: False
+            size_hint: (None, None)
+            size: (150, bot_elbow.y - 5)
+            pos: (5, 0)
+            bar_width: 0
+            GridLayout:
+                cols: 1
+                id: side_btns
+                size_hint: (1, None)
+                height: self.minimum_height
+                spacing: 5
+                LCARSButtonSideBarTall:
+                    id: main_btn
+                    text: 'MAIN SYSTEM'
+                    background_color: bot_elbow.color
+                    on_release: _screen_manager.current = 'MAIN SYSTEM'
+                LCARSButtonSideBarShort:
+                    id: prg_btn
+                    text: 'PROGRAMS'
+                    background_color: GUI_CONST.COLORS['orange'] if not root.alarming else GUI_CONST.COLORS['mars']
+                    on_release: _screen_manager.current = 'PROGRAMS'
+                LCARSButtonSideBarMed:
+                    id: data_btn
+                    text: 'SYSTEM TRENDS'
+                    background_color: GUI_CONST.COLORS['peach'] if not root.alarming else GUI_CONST.COLORS['mars']
+                    on_release: _screen_manager.current = 'SYSTEM TRENDS'
+                LCARSButtonSideBarShort:
+                    id: set_btn
+                    text: 'SETTINGS'
+                    background_color: GUI_CONST.COLORS['light_blue'] if not root.alarming else GUI_CONST.COLORS['mars']
+                    on_release: _screen_manager.current = 'SETTINGS'
+                LCARSButtonSideBarMed:
+                    background_color: GUI_CONST.COLORS['peach'] if not root.alarming else GUI_CONST.COLORS['mars']
+                    text: '08-41278'
+                    disabled: True
+                    opacity: 1
+                LCARSButtonSideBarTall:
+                    background_color: GUI_CONST.COLORS['yellow'] if not root.alarming else GUI_CONST.COLORS['mars']
+                    text: '09-19438'
+                    disabled: True
+                    opacity: 1
+
+        #############################################################
+        # Main Display Area
+
+        
+        
+        BoxLayout:
+            orientation: 'vertical'
+            id: display
+            pos: (155, 0)
+            size_hint: (None, None)
+            size: (root.width - self.x, bot_elbow_ext.y)
+
+            Label:
+                text: _screen_manager.current
+                font_name: 'LCARS_Semi_Bold'
+                font_size: sp(40)
+                size_hint: 1, None
+                height: self.font_size + 15
+                text_size: self.size
+                halign: 'right'
+                color: GUI_CONST.COLORS['orange']
+                padding: (20, 0)
+
+            ScreenManager:
+                id: _screen_manager
+                transition: LCARSTransition()
+                SystemScreen:
+                    name: 'MAIN SYSTEM'
+                TrendScreen:
+                    name: 'SYSTEM TRENDS'
+                LogScreen:
+                    name: 'SYSTEM LOGS'
+                ProgramScreen:
+                    name: 'PROGRAMS'
+                SettingScreen:
+                    name: 'SETTINGS'
+                AlarmScreen:
+                    name: 'ALARMS'

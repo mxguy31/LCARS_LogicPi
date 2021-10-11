@@ -1,0 +1,193 @@
+#:kivy 2.0.0
+#:import utils kivy.utils
+
+#:import GUI_CONST gui.constants.GUI_CONST
+#:import LCARSButton gui.widgets.lcars_button
+#:import LCARSButtonRound gui.widgets.lcars_button
+#:import LCARSElbow gui.widgets.lcars_images
+#:import LCARSCap gui.widgets.lcars_images
+#:import LCARSBar gui.widgets.lcars_images
+#:import LCARSViewScreen gui.widgets.lcars_viewscreen
+#:import LCARSButtonDecrease gui.widgets.lcars_button
+#:import LCARSButtonIncrease gui.widgets.lcars_button
+#:import LCARSModeToggle gui.widgets.lcars_button
+#:import LCARSSysLogViewer gui.widgets.lcars_syslog
+#:import LCARSSysLogHeader gui.widgets.lcars_syslog
+
+#<Widget>:
+#    canvas.after:
+#        Line:
+#            rectangle: self.x+1,self.y+1,self.width-1,self.height-1
+#            dash_offset: 5
+#            dash_length: 3
+
+<ProgramScreen>:
+    BoxLayout:
+        orientation: 'horizontal'
+        size: root.width, root.height
+        padding: (50, 10, 20, 20)
+        spacing: 5
+        # Side selection buttons and caps
+        GridLayout:
+            id: selection_btns
+            cols: 2
+            rows: 9
+            size_hint: (None, None)
+            width: self.minimum_width
+            height: self.minimum_height
+            pos_hint: {'center_y': .5}
+            spacing: 5
+
+            LCARSButtonRound:
+                text: 'PREV'
+                on_release: root.prev_page()
+                disabled: not(root.prev_enabled)
+                background_color: GUI_CONST.COLORS['yellow']
+            Widget:
+                size_hint: (None, None)
+                size: (38, 51)
+
+            Widget:
+                id: top_spacer
+                size_hint: (None, None)
+                size: (150, 25)
+            Widget:
+                size_hint: (None, None)
+                size: (38, 25)
+
+            LCARSButton:
+                id: btn_a
+                text: '01-23156' if root.button_text[0] is None else root.button_text[0].upper()
+                background_color: GUI_CONST.COLORS['sunflower']
+                on_release: root.group_select(0)
+                disabled: True if root.button_text[0] is None else False
+                opacity: 1 if self.disabled else 1  # override basic button logic
+            LCARSCap:
+                orientation: 'right'
+                opacity: 1 if root.selected == 0 else 0
+                color: btn_a.background_color
+
+            LCARSButton:
+                id: btn_b
+                text: '02-19475' if root.button_text[1] is None else root.button_text[1].upper()
+                background_color: GUI_CONST.COLORS['light_blue']
+                on_release: root.group_select(1)
+                disabled: True if root.button_text[1] is None else False
+                opacity: 1 if self.disabled else 1
+            LCARSCap:
+                orientation: 'right'
+                opacity: 1 if root.selected == 1 else 0
+                color: btn_b.background_color
+
+            LCARSButton:
+                id: btn_c
+                text: '03-85473' if root.button_text[2] is None else root.button_text[2].upper()
+                background_color: GUI_CONST.COLORS['magenta']
+                on_release: root.group_select(2)
+                disabled: True if root.button_text[2] is None else False
+                opacity: 1 if self.disabled else 1
+            LCARSCap:
+                orientation: 'right'
+                opacity: 1 if root.selected == 2 else 0
+                color: btn_c.background_color
+
+            LCARSButton:
+                id: btn_d
+                text: '04-49328' if root.button_text[3] is None else root.button_text[3].upper()
+                background_color: GUI_CONST.COLORS['african_violet']
+                on_release: root.group_select(3)
+                disabled: True if root.button_text[3] is None else False
+                opacity: 1 if self.disabled else 1
+            LCARSCap:
+                orientation: 'right'
+                opacity: 1 if root.selected == 3 else 0
+                color: btn_d.background_color
+
+            LCARSButton:
+                id: btn_e
+                text: '05-07843' if root.button_text[4] is None else root.button_text[4].upper()
+                background_color: GUI_CONST.COLORS['tomato']
+                on_release: root.group_select(4)
+                disabled: True if root.button_text[4] is None else False
+                opacity: 1 if self.disabled else 1
+            LCARSCap:
+                orientation: 'right'
+                opacity: 1 if root.selected == 4 else 0
+                color: btn_e.background_color
+
+            Widget:
+                id: bot_spacer
+                size_hint: (None, None)
+                size: (150, 25)
+            Widget:
+                size_hint: (None, None)
+                size: (38, 25)
+
+            LCARSButtonRound:
+                id: btn_next
+                text: 'NEXT'
+                on_release: root.next_page()
+                disabled: not(root.next_enabled)
+                background_color: GUI_CONST.COLORS['butterscotch']
+            Widget:
+                size_hint: (None, None)
+                size: (38, 51)
+
+        LCARSViewScreen:
+            open_screen: root.screen_open
+            BoxLayout:
+                orientation: 'vertical'
+                padding: (25, 33)
+                spacing: 10
+                Label:
+                    text: root.program_data['Label']
+                    font_name: 'LCARS_Semi_Bold'
+                    font_size: sp(24)
+                    size_hint: 1, None
+                    size: self.texture_size
+                    halign: 'center'
+                    color: GUI_CONST.COLORS['orange']
+
+                BoxLayout:
+                    orientation: 'horizontal'
+                    spacing: 15
+                    size_hint: (1, None)
+                    height: 120
+                    # Description box
+                    Label:
+                        text: root.program_data['Description']
+                        font_name: 'LCARS_Semi_Bold'
+                        font_size: sp(24)
+                        size_hint: (1, 1)
+                        text_size: self.size
+                        valign: 'middle'
+                        halign: 'center'
+                        color: GUI_CONST.COLORS['orange']
+                    # More detail button
+                    LCARSButtonRound:
+                        text: 'PROGRAM DETAIL'
+                        background_color: GUI_CONST.COLORS['magenta']
+                        on_release: root.detail_request()
+
+                LCARSSysLogHeader:
+                    id: header
+                    size_hint: (1, None)
+                    height: dp(24)
+                
+                LCARSSysLogViewer:
+                    data: root.log_data
+
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint: (1, None)
+                    height: 51
+                    LCARSButtonRound:
+                        text: 'PERIOD' + ' - ' + str(root.program_data['Period'])
+                        background_color: GUI_CONST.COLORS['light_blue']
+                        on_release: root.period_popup()
+                    Widget:
+                        size_hint: (1,1)
+                    LCARSModeToggle:
+                        mode: root.program_data['Mode']
+                        status: root.program_data['Status']
+                        selection_callback: root.update_program(name=root.program_data['Name'], mode=self.mode)

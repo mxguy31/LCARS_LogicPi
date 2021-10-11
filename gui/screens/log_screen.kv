@@ -1,0 +1,17 @@
+#:kivy 2.0.0
+#:import utils kivy.utils
+
+#:import LCARSSysLogViewer gui.widgets.lcars_syslog
+#:import LCARSSysLogHeader gui.widgets.lcars_syslog
+
+<LogScreen>:
+    LCARSSysLogHeader:
+        id: header
+        pos: (20, root.height - self.height - 10)
+        size_hint: (None, None)
+        size: (root.width - 25, dp(24))
+    LCARSSysLogViewer:
+        pos: (20, 5)
+        size_hint: (None, None)
+        size: (root.width - 20, root.height - header.height - 20)
+        data: root.log_data
