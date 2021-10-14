@@ -53,12 +53,7 @@ class TrendScreen(Screen):
         self.update_clock.cancel()  # Just create the clock, don't run it
 
     def after_init(self, *args):
-        x_values = list(range(self.max_x + 1))
-        current_datetime = datetime.now().replace(microsecond=0)
-        current_datetime += timedelta(hours=1)
-        major_period = timedelta(hours=1)
-        date_values = [current_datetime - major_period * i for i in x_values]
-        self.graph_view = TimeSeriesGraph(date_values,
+        self.graph_view = TimeSeriesGraph(self._get_date_values(),
                                         date_label_format='%b-%d %H:00',
                                         x_grid_label=True,
                                         y_grid_label=True,
@@ -68,7 +63,14 @@ class TrendScreen(Screen):
                                         label_options={'font_name': 'LCARS_Bold'})
         self.viewgrid.add_widget(self.graph_view)
         self.update_graph_view()
-            
+
+    def _get_date_values(self):
+        x_values = list(range(self.max_x + 1))
+        current_datetime = datetime.now().replace(microsecond=0, second=0, minute=0)
+        current_datetime += timedelta(hours=1)
+        major_period = timedelta(hours=1)
+        return [current_datetime - major_period * i for i in x_values]
+
     def on_pre_enter(self):
         self.data_list = self.db.data_read()
         self.update_clock()
@@ -106,6 +108,8 @@ class TrendScreen(Screen):
     def update_graph_view(self, *args):
         if not self.graph_view:
             return
+
+        self.graph_view.x_date_labels = self._get_date_values()
 
         x_diff = self.x_v2 - self.x_v1
         if x_diff < 10:
@@ -158,7 +162,12 @@ class TrendScreen(Screen):
     def update_data(self, *args):
         high_y = 1
         low_y = 65535
-        unix_now = int(time.time())
+
+        now = datetime.now()
+        next_hour = (now + timedelta(hours=1)).replace(microsecond=0, second=0, minute=0) 
+        padd = (next_hour - now).seconds
+        graph_now = int(time.time()) + padd
+
         for plot in self.plots.keys():
             n_entries = list()
             entries = self.db.get_datalog_entries(plot)
@@ -167,7 +176,7 @@ class TrendScreen(Screen):
 
             for i in range(len(entries)):
                 (x, y) = entries[i]
-                x = (unix_now - x) / 3600  # hours since now
+                x = (graph_now - x) / 3600  # hours since now
                 if x > self.max_x:
                     break
 
@@ -189,7 +198,7 @@ class TrendScreen(Screen):
                 low_y = 0
                 high_y = 0
             first_y = n_entries[0][1]
-            n_entries.insert(0, (0, first_y))
+            n_entries.insert(0, (padd / 3600, first_y))
             self.plots[plot].points = n_entries
 
         if len(self.plots) > 0:
