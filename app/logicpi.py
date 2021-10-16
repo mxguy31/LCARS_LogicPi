@@ -75,8 +75,9 @@ class LogicPi:
     def process_check(self, p_dict):
         for program in self.database.program_list():
             data = self.database.program_read(program)
-            # The process won't be running under these conditions.
-            if data['Mode'] == OP_MODE.STOP or data['Mode'] == OP_MODE.HALT:
+            
+            # The process won't be running if halted.
+            if data['Mode'] == OP_MODE.HALT:
                 continue
 
             t_time = data['Period'] * CONST.PROCESS_STALL_CYCLES
