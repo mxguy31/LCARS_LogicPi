@@ -228,7 +228,6 @@ class Program:
 
         def run_program():
             t1 = time.time()
-            self.last_run = t1
             self.program_run()
             t2 = time.time()
 
@@ -256,14 +255,14 @@ class Program:
                                    OP_STATE.FAIL: [None]},
                      OP_MODE.PAUSE: {OP_STATE.RUN: [set_pause,
                                                     self.program_pause],
-                                     OP_STATE.PAUSE: [None],
+                                     OP_STATE.PAUSE: [self.program_pause],
                                      OP_STATE.STOP: [None],
                                      OP_STATE.FAIL: [None]},
                      OP_MODE.STOP: {OP_STATE.RUN: [set_stop,
                                                    self.program_stop],
                                     OP_STATE.PAUSE: [set_stop,
                                                      self.program_stop],
-                                    OP_STATE.STOP: [None],
+                                    OP_STATE.STOP: [self.program_stop],
                                     OP_STATE.FAIL: [set_stop]},
                      OP_MODE.HALT: {OP_STATE.RUN: [set_stop,
                                                    self.program_stop,
@@ -280,6 +279,7 @@ class Program:
         while self.running:
             loop_mode = self.mode  # Pulled up here to minimize db access
             loop_status = self.status
+            self.last_run = time.time()
             for item in MODE_DICT[loop_mode][loop_status]:
                 if item is not None:
                     try:
