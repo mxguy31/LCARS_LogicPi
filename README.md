@@ -26,7 +26,10 @@ Basic variables should be created, otherwise defaults will be used, for example:
 ```
 
 To properly populate the database, program settings should be declared in
-program_init() as a dictionary.
+program_init() as a dictionary. The setting values are only written to the 
+database if the setting does not exist yet. This will preserve settings
+already present.
+
 For example:
 ```
     self.settings = {'Set1': 23, 'Set2': 'test', 'Set3': True}
