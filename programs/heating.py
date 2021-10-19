@@ -34,6 +34,8 @@ class Heating(Program):
             'PWM_Reverse': self.config['MISC'].getboolean('PWM_REVERSE')
             }
 
+        self.call_stop_every_cycle = False
+
         if self.config['MISC'].getboolean('RESET_TO_INI'):
             for key, value in self.settings.items():
                 self.write_setting(key, value)
