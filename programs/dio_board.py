@@ -10,6 +10,7 @@ class DIO_Board(Program):
                             'board scanner.')
         self.label = 'IO SCANNER'
         self.button_text = 'IO SCANNER'
+        self.call_stop_every_cycle = False
 
         for io in self.io.get_inputs().keys():
             self.write_datapoint(io, False)
