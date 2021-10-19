@@ -6,11 +6,12 @@
 
 from gui.widgets.graph import (Graph, identity, exp10, log10)
 from kivy.graphics.transformation import Matrix
-
+from kivy.properties import ListProperty
 from math import radians
 
 
 class TimeSeriesGraph(Graph):
+    x_date_labels = ListProperty()
 
     def __init__(self, x_date_labels, date_label_format='%b', _with_stencilbuffer=False, **kwargs):
         self.x_date_labels = x_date_labels
@@ -18,6 +19,7 @@ class TimeSeriesGraph(Graph):
         self._with_stencilbuffer = _with_stencilbuffer
         kwargs["xmin"] = 0
         kwargs["xmax"] = len(self.x_date_labels) - 1
+        self.bind(x_date_labels=self._update_labels)
         super(TimeSeriesGraph, self).__init__(**kwargs)
 
     def _get_ticks(self, major, minor, log, s_min, s_max):
@@ -35,7 +37,7 @@ class TimeSeriesGraph(Graph):
 
         return points_major, points_minor
 
-    def _update_labels(self):
+    def _update_labels(self, *args):
         xlabel = self._xlabel
         ylabel = self._ylabel
         x = self.x
