@@ -45,16 +45,12 @@ class Program:
         self._database = AppDatabase()
         self.log = get_worker_log(self.name, log_queue)
         self.settings = dict()
-        self.config = None
-        config_file = Path(CONST.CONFIG_DIR, self.name).with_suffix('.ini')
-        if config_file.is_file():
-            try:
-                self.config = configparser.ConfigParser(allow_no_value=True)
-                self.config.optionxform = str  # Case sensitive option names
-                self.config.read(config_file)
-            except IOError:
-                self.log.warning(f'Could not read config file '
-                                 f'({config_file}).')
+        
+        self.reload_config_on_restart = False
+        self.call_stop_every_cycle = True
+        self.call_pause_every_cycle = True
+
+        self.config = self._load_config()        
 
         self._database.program_write(self.name,
                                      mode='STOP',
@@ -62,7 +58,11 @@ class Program:
                                      period=1,
                                      label=self.name,
                                      button_text=self.name)
-        self.program_init()
+        try:
+            self._program_init()
+        except Exception:
+            self.log.exception(f'Failed to initialize {self.name} program.')
+            self.status = self.OP_STATES.FAIL
 
         self.last_run = None
 
@@ -76,6 +76,19 @@ class Program:
                     self.write_setting(key, value)
                 elif key not in current_settings.keys():
                     self.write_setting(key, value)
+
+    def _load_config(self):
+        config_file = Path(CONST.CONFIG_DIR, self.name).with_suffix('.ini')
+        config = None
+        if config_file.is_file():
+            try:
+                config = configparser.ConfigParser(allow_no_value=True)
+                config.optionxform = str  # Case sensitive option names
+                config.read(config_file)
+            except IOError:
+                self.log.warning(f'Could not read config file '
+                                 f'({config_file}).')
+        return config
 
     def read_setting(self, setting):
         return self._database.setting_read_single(self.name, setting)
@@ -119,7 +132,7 @@ class Program:
                 self.log.debug(f'Program ({self.name}) '
                                f'status set to ({status}).')
                 if status == OP_STATE.FAIL:
-                    self.program_fail()
+                    self._program_fail()
                     self.log.warning(f'Program ({self.name}) failed.')
             else:
                 self.log.warning(f'Failed to set ({self.name}) status to '
@@ -228,7 +241,7 @@ class Program:
 
         def run_program():
             t1 = time.time()
-            self.program_run()
+            self._program_run()
             t2 = time.time()
 
             period = self.period
@@ -250,25 +263,25 @@ class Program:
                                    OP_STATE.PAUSE: [set_run,
                                                     run_program],
                                    OP_STATE.STOP: [set_run,
-                                                   self.program_start,
+                                                   self._program_start,
                                                    run_program],
                                    OP_STATE.FAIL: [None]},
                      OP_MODE.PAUSE: {OP_STATE.RUN: [set_pause,
-                                                    self.program_pause],
-                                     OP_STATE.PAUSE: [self.program_pause],
+                                                    self._program_pause],
+                                     OP_STATE.PAUSE: [self._program_pause],
                                      OP_STATE.STOP: [None],
                                      OP_STATE.FAIL: [None]},
                      OP_MODE.STOP: {OP_STATE.RUN: [set_stop,
-                                                   self.program_stop],
+                                                   self._program_stop],
                                     OP_STATE.PAUSE: [set_stop,
-                                                     self.program_stop],
-                                    OP_STATE.STOP: [self.program_stop],
+                                                     self._program_stop],
+                                    OP_STATE.STOP: [self._program_stop],
                                     OP_STATE.FAIL: [set_stop]},
                      OP_MODE.HALT: {OP_STATE.RUN: [set_stop,
-                                                   self.program_stop,
+                                                   self._program_stop,
                                                    halt_loop],
                                     OP_STATE.PAUSE: [set_stop,
-                                                     self.program_stop,
+                                                     self._program_stop,
                                                      halt_loop],
                                     OP_STATE.STOP: [set_stop,
                                                     halt_loop],
@@ -305,35 +318,60 @@ class Program:
                 else:
                     time.sleep(1)
 
-        self.program_halt()
+        self._program_halt()
         self._database.close_connection()
+
+    def _program_init(self):
+        self.program_init()
+
+    def _program_start(self):
+        if self.reload_config_on_restart:
+            self.config = self._load_config()
+        self.program_start()
+
+    def _program_run(self):
+        self.program_run()
+
+    def _program_pause(self):
+        if self.call_pause_every_cycle:
+            self.program_pause()
+
+    def _program_stop(self):
+        if self.call_stop_every_cycle:
+            self.program_stop()
+
+    def _program_fail(self):
+        self.program_fail()
+
+    def _program_halt(self):
+        self.program_halt()
 
     def program_init(self):
         """ Called once when the program is initialized """
         pass
 
     def program_start(self):
-        """ Called when the program starts or restarts after a stop """
+        """ Called once when the program starts or restarts after a stop """
         pass
 
     def program_run(self):
-        """ Called every program operation cycle """
+        """ Called every program cycle when the program is running"""
         pass
 
     def program_pause(self):
-        """ Called when the program goes into a paused state """
+        """ Called every program cycle when the program is paused """
         pass
 
     def program_stop(self):
-        """ Called when the program is stopped """
+        """ Called every program cycle when the program is stopped """
         pass
 
     def program_fail(self):
-        """ Called then the program fails """
+        """ Called once when the program fails """
         pass
 
     def program_halt(self):
-        """ Called before the program in deleted from memory """
+        """ Called once before the program is halted """
         pass
 
 
