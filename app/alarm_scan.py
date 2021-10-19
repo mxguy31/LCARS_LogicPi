@@ -23,6 +23,8 @@ class Alarm_Scan(Program):
         self.description = ('Scans datapoints for value beyond limits')
         self.label = 'ALARM SCANNER'
         self.button_text = 'ALARMS'
+        self.call_stop_every_cycle = False
+        self.reload_config_on_restart = True
 
         self.write_datapoint('Failed_Process', False)
         self.write_datapoint('Stalled_Process', False)
