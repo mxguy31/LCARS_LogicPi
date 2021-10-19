@@ -23,20 +23,20 @@ class Heating(Program):
         self.label = 'HEATING CONTROL'
         self.button_text = 'HEATING'
         self.settings = {
-            'PID_P': float(self.config['PID']['PROPORTIONAL']),
-            'PID_I': float(self.config['PID']['INTEGRAL']),
-            'PID_D': float(self.config['PID']['DERIVATIVE']),
-            'Setpoint': float(self.config['PID']['SETPOINT']),
+            'PID_P': self.config['PID'].getfloat('PROPORTIONAL', self.DEFAULT_PID_P),
+            'PID_I': self.config['PID'].getfloat('INTEGRAL', self.DEFAULT_PID_I),
+            'PID_D': self.config['PID'].getfloat('DERIVATIVE', self.DEFAULT_PID_D),
+            'Setpoint': self.config['PID'].getfloat('SETPOINT', self.DEFAULT_SETPOINT),
             'Manual': False,
             'Output': self.config['MISC']['OUTPUT'],
-            'PID_Sample_Time': float(self.config['PID']['PID_SAMPLE_TIME']),
-            'PWM_Period': float(self.config['MISC']['PWM_PERIOD']),
-            'PWM_Reverse': self.config['MISC'].getboolean('PWM_REVERSE')
+            'PID_Sample_Time': self.config['PID'].getfloat('PID_SAMPLE_TIME', 5),
+            'PWM_Period': self.config['MISC'].getfloat('PWM_PERIOD', 5),
+            'PWM_Reverse': self.config['MISC'].getboolean('PWM_REVERSE', False)
             }
 
         self.call_stop_every_cycle = False
 
-        if self.config['MISC'].getboolean('RESET_TO_INI'):
+        if self.config['MISC'].getboolean('RESET_TO_INI', False):
             for key, value in self.settings.items():
                 self.write_setting(key, value)
 
@@ -73,11 +73,7 @@ class Heating(Program):
         self._PID.reset()
 
     def program_fail(self):
-        try:
-            demand = float(self.config['PID']['FAIL_DEMAND'])
-        except ValueError:
-            self.log.warning('Incorrect failure demand specified, using 0')
-            demand = 0
+        demand = float(self.config['PID'].getfloat('FAIL_DEMAND', 0))
         self.write_datapoint('HEAT_DEMAND', demand)
 
     def program_stop(self):
