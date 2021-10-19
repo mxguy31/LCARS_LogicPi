@@ -9,6 +9,7 @@ class SSR_Board(Program):
         self.description = 'Home-brew solid state relay control board scanner.'
         self.label = 'SSR CONTROL'
         self.button_text = 'SSR CONTROL'
+        self.call_stop_every_cycle = False
 
         for output in self.ssr_hat.outputs:
             self.write_datapoint(output.name, False)
