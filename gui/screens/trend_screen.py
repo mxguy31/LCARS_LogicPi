@@ -49,7 +49,7 @@ class TrendScreen(Screen):
                   y_v2=self.update_graph_view)
         
         Clock.schedule_once(self.after_init, 0)
-        self.update_clock = Clock.schedule_interval(self.update_data, 1)
+        self.update_clock = Clock.schedule_interval(self.update_data, 5)
         self.update_clock.cancel()  # Just create the clock, don't run it
 
     def after_init(self, *args):
@@ -73,6 +73,7 @@ class TrendScreen(Screen):
 
     def on_pre_enter(self):
         self.data_list = self.db.data_read()
+        self.update_data()
         self.update_clock()
 
     def on_pre_leave(self):
@@ -109,12 +110,10 @@ class TrendScreen(Screen):
         if not self.graph_view:
             return
 
-        self.graph_view.x_date_labels = self._get_date_values()
-
         x_diff = self.x_v2 - self.x_v1
         if x_diff < 10:
             self.graph_view.x_ticks_major = 1
-            self.graph_view.x_ticks_minor = 0
+            self.graph_view.x_ticks_minor = 6
         elif x_diff < 30:
             self.graph_view.x_ticks_major = 3
             self.graph_view.x_ticks_minor = 3
@@ -158,8 +157,9 @@ class TrendScreen(Screen):
         self.graph_view.xmax = self.x_v2
         self.graph_view.ymin = self.y_v1
         self.graph_view.ymax = self.y_v2
+        self.graph_view.x_date_labels = self._get_date_values()
 
-    def update_data(self, *args):
+    def update_data(self, dt=None):
         high_y = 1
         low_y = 65535
 
@@ -177,7 +177,7 @@ class TrendScreen(Screen):
             for i in range(len(entries)):
                 (x, y) = entries[i]
                 x = (graph_now - x) / 3600  # hours since now
-                if x > self.max_x:
+                if (x > self.graph_view.xmax + 1) and i > 2:
                     break
 
                 points = [(x, y)]
@@ -209,5 +209,9 @@ class TrendScreen(Screen):
         else:
             self.min_y = 0
             self.max_y = 100
-
-        self.update_graph_view()
+        
+        if dt is None:
+            return
+        
+        if padd < dt:
+            self.graph_view.x_date_labels = self._get_date_values()
