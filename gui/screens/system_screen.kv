@@ -176,6 +176,18 @@
                 disabled: True
 
             LCARSButtonBoolEquipment:
+                id: skimmer_cup
+                io_point: 'Custom_DI07'
+                status: root.status[self.io_point] if self.io_point in root.status else None
+                size: (70, 30)
+                pos: (295, 182)
+                blink_on: True
+                disabled: True
+                color_none: [0, 0, 0, 0]
+                color_true: GUI_CONST.COLORS['mars']
+                color_false: [0, 0, 0, 0]
+
+            LCARSButtonBoolEquipment:
                 id: skimmer
                 human_text: 'PROTIEN SKIMMER'
                 on_press: root.equipment_select(disp_text=self.human_text, d_point=self.io_point)
