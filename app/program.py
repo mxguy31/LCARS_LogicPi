@@ -65,14 +65,18 @@ class Program:
             self.status = self.OP_STATES.FAIL
 
         self.last_run = None
+        self.settings_to_db()
 
+    def settings_to_db(self, overwrite=False):
         if not isinstance(self.settings, dict):
             self.log.warning('Program settings information is not a dict.')
             self.settings = dict()
         else:
             current_settings = self.read_settings()
             for key, value in self.settings.items():
-                if current_settings is None:
+                if overwrite:
+                    self.write_setting(key, value)
+                elif current_settings is None:
                     self.write_setting(key, value)
                 elif key not in current_settings.keys():
                     self.write_setting(key, value)
