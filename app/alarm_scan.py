@@ -205,7 +205,7 @@ class Alarm_Scan(Program):
         if a_list:
             self.alarm_db.activate_alarms(tuple(a_list))
 
-        output = self.read_setting('local_out')
+        output = self.read_setting('local_output')
         if output is None:
             return
 
