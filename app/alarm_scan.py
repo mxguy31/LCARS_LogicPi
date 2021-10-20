@@ -25,6 +25,7 @@ class Alarm_Scan(Program):
         self.button_text = 'ALARMS'
         self.call_stop_every_cycle = False
         self.reload_config_on_restart = True
+        self._first_run = True
 
         self.write_datapoint('Failed_Process', False)
         self.write_datapoint('Stalled_Process', False)
@@ -51,7 +52,10 @@ class Alarm_Scan(Program):
 
         if self.config is None:
             return
-
+        else:
+            self._parse_config()
+    
+    def _parse_config(self):
         if not self.config.has_section('BASIC'):
             return  # config must have 'BASIC' section
         
@@ -132,7 +136,12 @@ class Alarm_Scan(Program):
     def program_start(self):
         # this sleep allows the rest of the programs to establish their
         # datapoints before the alarm scanner starts running.
-        time.sleep(5)
+        if self._first_run:
+            time.sleep(5)
+            self._first_run = False
+        else:
+            self._parse_config()
+            self.settings_to_db(overwrite=True)
 
     def program_run(self):
         message_list = []
