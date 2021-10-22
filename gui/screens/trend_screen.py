@@ -49,7 +49,7 @@ class TrendScreen(Screen):
                   y_v2=self.update_graph_view)
         
         Clock.schedule_once(self.after_init, 0)
-        self.update_clock = Clock.schedule_interval(self.update_data, 5)
+        self.update_clock = Clock.schedule_interval(self.update_data, 2)
         self.update_clock.cancel()  # Just create the clock, don't run it
 
     def after_init(self, *args):
@@ -210,8 +210,4 @@ class TrendScreen(Screen):
             self.min_y = 0
             self.max_y = 100
         
-        if dt is None:
-            return
-        
-        if padd < dt:
-            self.graph_view.x_date_labels = self._get_date_values()
+        self.update_graph_view()
