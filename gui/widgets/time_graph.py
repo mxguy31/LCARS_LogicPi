@@ -2,7 +2,8 @@
 # Modified the example (simplified) as it wouldn't run under recent kivy
 # versions. The keyword 'month' would break the requirements for the
 # x_ticks_major property as it only accepts an int value. 
-# Removed the evample as the imports caused issues
+# Removed the example as the imports caused issues
+# bound to date labels to allow updates on time changes
 
 from gui.widgets.graph import (Graph, identity, exp10, log10)
 from kivy.graphics.transformation import Matrix
@@ -19,7 +20,7 @@ class TimeSeriesGraph(Graph):
         self._with_stencilbuffer = _with_stencilbuffer
         kwargs["xmin"] = 0
         kwargs["xmax"] = len(self.x_date_labels) - 1
-        self.bind(x_date_labels=self._update_labels)
+        self.bind(x_date_labels=self._redraw_all)
         super(TimeSeriesGraph, self).__init__(**kwargs)
 
     def _get_ticks(self, major, minor, log, s_min, s_max):
