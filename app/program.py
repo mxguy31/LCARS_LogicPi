@@ -266,26 +266,26 @@ class Program:
         MODE_DICT = {OP_MODE.RUN: {OP_STATE.RUN: [run_program],
                                    OP_STATE.PAUSE: [set_run,
                                                     run_program],
-                                   OP_STATE.STOP: [set_run,
-                                                   self._program_start,
+                                   OP_STATE.STOP: [self._program_start,
+                                                   set_run,
                                                    run_program],
                                    OP_STATE.FAIL: [None]},
-                     OP_MODE.PAUSE: {OP_STATE.RUN: [set_pause,
-                                                    self._program_pause],
+                     OP_MODE.PAUSE: {OP_STATE.RUN: [self._program_pause,
+                                                    set_pause],
                                      OP_STATE.PAUSE: [self._program_pause],
                                      OP_STATE.STOP: [None],
                                      OP_STATE.FAIL: [None]},
-                     OP_MODE.STOP: {OP_STATE.RUN: [set_stop,
-                                                   self._program_stop],
-                                    OP_STATE.PAUSE: [set_stop,
-                                                     self._program_stop],
+                     OP_MODE.STOP: {OP_STATE.RUN: [self._program_stop,
+                                                   set_stop],
+                                    OP_STATE.PAUSE: [self._program_stop,
+                                                    set_stop],
                                     OP_STATE.STOP: [self._program_stop],
                                     OP_STATE.FAIL: [set_stop]},
-                     OP_MODE.HALT: {OP_STATE.RUN: [set_stop,
-                                                   self._program_stop,
+                     OP_MODE.HALT: {OP_STATE.RUN: [self._program_stop,
+                                                   set_stop,
                                                    halt_loop],
-                                    OP_STATE.PAUSE: [set_stop,
-                                                     self._program_stop,
+                                    OP_STATE.PAUSE: [self._program_stop,
+                                                     set_stop,
                                                      halt_loop],
                                     OP_STATE.STOP: [set_stop,
                                                     halt_loop],
@@ -337,11 +337,15 @@ class Program:
         self.program_run()
 
     def _program_pause(self):
-        if self.call_pause_every_cycle:
+        if self.status != self.OP_MODES.PAUSE:
+            self.program_pause()
+        elif self.call_pause_every_cycle:
             self.program_pause()
 
     def _program_stop(self):
-        if self.call_stop_every_cycle:
+        if self.status != self.OP_MODES.STOP:
+            self.program_stop()
+        elif self.call_stop_every_cycle:
             self.program_stop()
 
     def _program_fail(self):
