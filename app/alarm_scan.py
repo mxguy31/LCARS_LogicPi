@@ -223,5 +223,5 @@ class Alarm_Scan(Program):
         else:
             self.write_datapoint(output, False)
 
-    def program_stop(self):
+    def program_halt(self):
         self.alarm_db.close_connection()
