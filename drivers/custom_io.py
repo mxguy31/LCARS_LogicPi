@@ -41,13 +41,25 @@ class CustomIO:
         if isinstance(config, dict):
             self._config.update(config)
 
-        self._output_driver = MCP23017(self._config['address_out'])
+        try:
+            self._output_driver = MCP23017(self._config['address_out'])
+        except Exception:
+            self._output_driver = None
+
         self.reset_outputs()
-        self._input_driver = MCP23017(self._config['address_in'])
+
+        try:
+            self._input_driver = MCP23017(self._config['address_in'])
+        except Exception:
+            self._input_driver = None
+
         del self._config['address_out']
         del self._config['address_in']
 
     def get_inputs(self, inputs=None):
+        if self._input_driver is None:
+            return dict()
+
         if not isinstance(inputs, list):
             inputs = list()
         r_dict = dict()
@@ -64,10 +76,16 @@ class CustomIO:
         return r_dict
 
     def reset_outputs(self):
+        if self._output_driver is None:
+            return
+
         self._output_driver.set_stat16(0xFFFF)
         self._output_driver.set_dir16(0x0)
 
     def set_outputs(self, relays=None):
+        if self._output_driver is None:
+            return
+
         if not isinstance(relays, dict):
             relays = dict()
 
@@ -85,6 +103,9 @@ class CustomIO:
             self._output_driver.set_stat16(stat)
 
     def get_outputs(self, relays=None):
+        if self._output_driver is None:
+            return dict()
+
         if not isinstance(relays, list):
             relays = list()
         r_dict = dict()
