@@ -79,10 +79,10 @@ class MCP23017:
             with SMBus(self._busnum) as bus:
                 bus.write_byte_data(self._address, register, value)
 
-        except OSError:
-            raise Error('I2C device at address '
-                        + str(hex(self._address))
-                        + ' could not be accessed.')
+        except OSError as e:
+            raise Exception('I2C device at address '
+                            + str(hex(self._address))
+                            + ' could not be accessed.') from e
 
     def _getregister(self, register):
         """
@@ -101,10 +101,10 @@ class MCP23017:
             with SMBus(self._busnum) as bus:
                 value = bus.read_byte_data(self._address, register)
 
-        except OSError:
-            raise Error('I2C device at address '
-                        + str(hex(self._address))
-                        + ' could not be accessed.')
+        except OSError as e:
+            raise Exception('I2C device at address '
+                            + str(hex(self._address))
+                            + ' could not be accessed.') from e
 
         else:
             return value
